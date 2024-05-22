@@ -1,0 +1,7 @@
+# 队伍配置文件夹
+number:
+  max: 4
+  min: 1
+loadFromFile: False # 若此为True则下述配置开启
+
+

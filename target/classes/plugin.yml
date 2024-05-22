@@ -1,0 +1,9 @@
+name: RaceCore
+version: '1.0-SNAPSHOT'
+main: online.yudream.racecore.RaceCore
+author: SiberianHusky
+api-version: '1.20'
+commands:
+  racecore:
+    aliases: rc
+    usage: /racecore help

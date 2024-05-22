@@ -1,0 +1,8 @@
+team1: # 以team+id命名
+  name: "" # 队伍显示名字
+  color: '&c'
+  players:
+    - 'p1' # 第一个人为队长
+    - 'p2'
+    - 'p3'
+    - 'p4'
