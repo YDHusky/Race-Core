@@ -1,6 +1,5 @@
 package online.yudream.racecore.commands;
 
-import online.yudream.racecore.RaceCore;
 import online.yudream.racecore.config.WorldConfig;
 import online.yudream.racecore.entity.RaceWorld;
 import online.yudream.racecore.utils.FileUtils;
@@ -19,6 +18,10 @@ import java.util.Objects;
 public class AdminCommands implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        if (!sender.hasPermission("racecore.admin")) {
+            sender.sendMessage("§c你没有权限使用该指令");
+            return false;
+        }
         if (strings.length > 0) {
             switch (strings[0]) {
                 case "saveWorld":
@@ -51,20 +54,22 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         List<String> list = new ArrayList<>();
-        switch (strings.length){
-            case 1:
-                list.add("saveWorld");
-                list.add("resetWorld");
-                list.add("help");
-                return list;
-            case 2:
-                if (strings[0].equals("saveWorld")||strings[0].equals("resetWorld")) {
-                    WorldConfig worldConfig = new WorldConfig();
-                    for (RaceWorld world:worldConfig.getWorlds()){
-                        list.add(world.getName());
-                    }
+        if (sender.hasPermission("racecore.admin")) {
+            switch (strings.length) {
+                case 1:
+                    list.add("saveWorld");
+                    list.add("resetWorld");
+                    list.add("help");
                     return list;
-                }
+                case 2:
+                    if (strings[0].equals("saveWorld") || strings[0].equals("resetWorld")) {
+                        WorldConfig worldConfig = new WorldConfig();
+                        for (RaceWorld world : worldConfig.getWorlds()) {
+                            list.add(world.getName());
+                        }
+                        return list;
+                    }
+            }
         }
         return list;
     }
