@@ -4,6 +4,8 @@ import online.yudream.racecore.RaceCore;
 import online.yudream.racecore.config.MainConfig;
 import online.yudream.racecore.config.TeamConfig;
 import online.yudream.racecore.config.WorldConfig;
+import online.yudream.racecore.data.TeamData;
+import org.bukkit.Bukkit;
 
 public class ConfigUtils {
     public static void initConfig() {
@@ -18,6 +20,7 @@ public class ConfigUtils {
         String teamConfigPath = "setting/team.yml";
         RaceCore.INSTANCE.saveResource(teamConfigPath, false);
         TeamConfig.index = FileUtils.getConfigFile(teamConfigPath);
+        TeamData.teamScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     }
 
 

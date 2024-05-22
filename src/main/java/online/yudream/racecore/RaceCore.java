@@ -18,8 +18,9 @@ public final class RaceCore extends JavaPlugin {
         INSTANCE = this;
         // 插件启动
         StartUtils.startPlugin();
-        Objects.requireNonNull(Bukkit.getPluginCommand("racecore")).setExecutor(new AdminCommands());
-        Objects.requireNonNull(Bukkit.getPluginCommand("racecore")).setTabCompleter(new AdminCommands());
+        // 注册指令
+        Objects.requireNonNull(Bukkit.getPluginCommand("RaceCoreAdmin")).setExecutor(new AdminCommands());
+        Objects.requireNonNull(Bukkit.getPluginCommand("RaceCoreAdmin")).setTabCompleter(new AdminCommands());
     }
 
     @Override

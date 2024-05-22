@@ -7,9 +7,11 @@ import online.yudream.racecore.RaceCore;
 import online.yudream.racecore.data.TeamData;
 import online.yudream.racecore.entity.BaseTeam;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 
 
 import java.util.ArrayList;
@@ -30,8 +32,11 @@ public class TeamUtils {
                     .color(RandomUtils.generateRandomColor())
                     .build();
             List<OfflinePlayer> members = new ArrayList<>();
+            Team team1 = TeamData.teamScoreboard.registerNewTeam("team" + team.getId());
+            team1.addEntry(caption);
             members.add(Bukkit.getOfflinePlayer(caption));
             team.setMembers(members);
+            team.setTeam(team1);
             TeamData.alreadyJoined.add(caption);
             TeamData.teams.put(BaseTeam.teamNumber, team);
             Bukkit.getPlayer(caption).sendMessage("§9创建成功！");
@@ -50,7 +55,13 @@ public class TeamUtils {
                 for (OfflinePlayer p : members) {
                     if (p == Bukkit.getOfflinePlayer(player)) {
                         members.remove(Bukkit.getOfflinePlayer(player));
-                        TeamData.teams.get(entry.getKey()).setMembers(members);
+                        BaseTeam team = TeamData.teams.get(entry.getKey());
+
+                        Team team1 = team.getTeam();
+                        team1.removeEntry(player);
+                        team.setTeam(team1);
+                        team.setMembers(members);
+
                         TeamData.alreadyJoined.remove(player);
                         Bukkit.getPlayer(player).sendMessage("§c你退出了当前团队！");
                         return;
@@ -125,6 +136,10 @@ public class TeamUtils {
             BaseTeam team = TeamData.teams.get(teamId);
             team.getMembers().add(Bukkit.getOfflinePlayer(player));
 
+            Team team1 = team.getTeam();
+            team1.addEntry(player);
+            team.setTeam(team1);
+
             Objects.requireNonNull(team.getCaptain().getPlayer()).sendMessage("§9玩家§7" + player + "§9加入了你的队伍！");
             Objects.requireNonNull(Bukkit.getPlayer(player)).sendMessage("§9你加入了§7" + team.getCaptain().getName() + "§9的队伍！");
 
@@ -151,14 +166,24 @@ public class TeamUtils {
                     .displayName(teamConfig.getString(teamKey + ".name"))
                     .color(teamConfig.getColor(teamKey + ".color"))
                     .build();
+            // 计分板队伍注册
+            Team team = TeamData.teamScoreboard.registerNewTeam(teamKey);
+            team.setDisplayName(teamConfig.getString(teamKey + ".name"));
+            team.setAllowFriendlyFire(false);
+            // 对于自己的队伍开启防碰撞体积, 而对其他队伍开启体积碰撞
+            // 这里的FOR_OWN_TEAM表示的意思是只对本队 关闭
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
+
             List<String> players = teamConfig.getStringList(teamKey + ".players");
             baseTeam.setCaptain(Bukkit.getOfflinePlayer(players.get(0)));
             List<OfflinePlayer> members = new ArrayList<>();
             for (String player : players) {
                 TeamData.alreadyJoined.add(player);
+                team.addEntry(player);
                 members.add(Bukkit.getOfflinePlayer(player));
             }
             baseTeam.setMembers(members);
+            baseTeam.setTeam(team);
             teams.add(baseTeam);
         }
         return teams;

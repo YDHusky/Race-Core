@@ -1,5 +1,8 @@
 package online.yudream.racecore.commands;
 
+import online.yudream.racecore.RaceCore;
+import online.yudream.racecore.config.WorldConfig;
+import online.yudream.racecore.entity.RaceWorld;
 import online.yudream.racecore.utils.FileUtils;
 import online.yudream.racecore.utils.MapResetUtils;
 import org.bukkit.command.Command;
@@ -9,6 +12,7 @@ import org.bukkit.command.TabExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,7 +49,23 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return List.of("saveWorld", "resetWorld", "help");
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        List<String> list = new ArrayList<>();
+        switch (strings.length){
+            case 1:
+                list.add("saveWorld");
+                list.add("resetWorld");
+                list.add("help");
+                return list;
+            case 2:
+                if (strings[0].equals("saveWorld")||strings[0].equals("resetWorld")) {
+                    WorldConfig worldConfig = new WorldConfig();
+                    for (RaceWorld world:worldConfig.getWorlds()){
+                        list.add(world.getName());
+                    }
+                    return list;
+                }
+        }
+        return list;
     }
 }
