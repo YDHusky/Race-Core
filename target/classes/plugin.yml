@@ -4,6 +4,9 @@ main: online.yudream.racecore.RaceCore
 author: SiberianHusky
 api-version: '1.20'
 commands:
-  racecore:
+  RaceCoreAdmin:
+    aliases: rca
+    usage: /rca help
+  RaceCore:
     aliases: rc
-    usage: /racecore help
+    usage: /rc help

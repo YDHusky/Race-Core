@@ -31,7 +31,7 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
                     } else {
                         sender.sendMessage(command.getUsage());
                     }
-                    return false;
+                    return true;
                 case "resetWorld":
                     if (strings.length == 2) {
                         String worldName = strings[1];
@@ -39,13 +39,11 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
                     } else {
                         sender.sendMessage(command.getUsage());
                     }
-                    return false;
+                    return true;
                 case "help":
                     sender.sendMessage(Objects.requireNonNull(FileUtils.readResourceFile("help.txt")));
-                    return false;
+                    return true;
             }
-        } else {
-            sender.sendMessage(command.getUsage());
         }
         return false;
 
