@@ -7,12 +7,10 @@ import online.yudream.racecore.RaceCore;
 import online.yudream.racecore.data.TeamData;
 import online.yudream.racecore.entity.BaseTeam;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,15 +52,21 @@ public class TeamUtils {
                 List<OfflinePlayer> members = entry.getValue().getMembers();
                 for (OfflinePlayer p : members) {
                     if (p == Bukkit.getOfflinePlayer(player)) {
-                        members.remove(Bukkit.getOfflinePlayer(player));
+
                         BaseTeam team = TeamData.teams.get(entry.getKey());
+
+                        members.remove(Bukkit.getOfflinePlayer(player));
 
                         Team team1 = team.getTeam();
                         team1.removeEntry(player);
                         team.setTeam(team1);
                         team.setMembers(members);
-
                         TeamData.alreadyJoined.remove(player);
+                        // 当退出玩家为队长时候删除队伍
+                        if (Objects.equals(team.getCaptain().getName(), player)){
+                            team.getTeam().unregister();
+                            TeamData.teams.remove(team.getId());
+                        }
                         Bukkit.getPlayer(player).sendMessage("§c你退出了当前团队！");
                         return;
                     }
@@ -147,6 +151,8 @@ public class TeamUtils {
             TeamData.invites.remove(player);
             TeamData.tasks.remove(player);
             TeamData.alreadyJoined.add(player);
+        }else{
+            Objects.requireNonNull(Bukkit.getPlayer(player)).sendMessage("§c邀请你的队伍不存在！");
         }
     }
 

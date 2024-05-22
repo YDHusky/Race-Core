@@ -7,6 +7,7 @@ commands:
   RaceCoreAdmin:
     aliases: rca
     usage: /rca help
+    permission: racecore.admin
   RaceCore:
     aliases: rc
     usage: /rc help
