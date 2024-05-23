@@ -1,0 +1,11 @@
+§7==========================§9Race Core§7==========================
+§9/rc create (name) 创建一个团队
+§9/rc invite (player) 邀请一个玩家到你的队伍
+§9/rc kick (player) 踢出一个组内玩家
+§9/rc leave 离开队伍
+§9/rc info 团队信息
+§9/rc accept 接受邀请
+§9/rc cancel 拒绝邀请
+
+§7tips: ()为必选参数,[]为可选参数
+

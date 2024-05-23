@@ -1,6 +1,7 @@
 package online.yudream.racecore.commands;
 
 import online.yudream.racecore.entity.BaseTeam;
+import online.yudream.racecore.utils.FileUtils;
 import online.yudream.racecore.utils.TeamUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PlayerCommands implements CommandExecutor, TabExecutor {
     @Override
@@ -71,6 +73,8 @@ public class PlayerCommands implements CommandExecutor, TabExecutor {
                             return true;
                         }
                     }
+                case "help":
+                    commandSender.sendMessage(Objects.requireNonNull(FileUtils.readResourceFile("admin-help.txt")));
             }
 
         }
