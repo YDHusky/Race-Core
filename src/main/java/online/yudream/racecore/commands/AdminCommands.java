@@ -4,6 +4,7 @@ import online.yudream.racecore.config.WorldConfig;
 import online.yudream.racecore.entity.RaceWorld;
 import online.yudream.racecore.utils.FileUtils;
 import online.yudream.racecore.utils.MapResetUtils;
+import online.yudream.racecore.utils.TeamUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,6 +41,20 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
                         sender.sendMessage(command.getUsage());
                     }
                     return true;
+                case "team":
+                    if (strings.length > 1) {
+                        switch (strings[1]) {
+                            case "random":
+                                if (strings.length == 3) {
+                                    int size = Integer.parseInt(strings[2]);
+                                    TeamUtils.randomTeam(size);
+                                } else if (strings.length == 4) {
+                                    int size = Integer.parseInt(strings[2]);
+                                    String[] players = strings[3].split(",");
+                                    TeamUtils.randomTeam(players,size);
+                                }
+                        }
+                    }
                 case "help":
                     sender.sendMessage(Objects.requireNonNull(FileUtils.readResourceFile("help.txt")));
                     return true;

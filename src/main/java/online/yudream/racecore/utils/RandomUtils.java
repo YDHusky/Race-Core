@@ -1,10 +1,11 @@
 package online.yudream.racecore.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.OfflinePlayer;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.nio.Buffer;
+import java.util.*;
 
 
 public class RandomUtils {
@@ -39,4 +40,26 @@ public class RandomUtils {
         int blueDiff = c1.getBlue() - c2.getBlue();
         return Math.sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
     }
+
+    public static List<List<OfflinePlayer>> randomPlayer(List<String> players, int size) {
+        List<List<OfflinePlayer>> playerGroups = new ArrayList<>();
+        int total = players.size();
+        int groupNum = total / size + (total % size == 0 ? 0 : 1);
+        total--;
+        for (int i=0;i<groupNum;i++){
+            List<OfflinePlayer> playerGroup = new ArrayList<>();
+            for (int j = 0; j < size; j++) {
+                if (total==0){
+                    break;
+                }else {
+                    int index = RANDOM.nextInt(total--);
+                    playerGroup.add(Bukkit.getOfflinePlayer(players.get(index)));
+                    players.remove(index);
+                }
+            }
+            playerGroups.add(playerGroup);
+        }
+        return playerGroups;
+    }
+
 }

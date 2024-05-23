@@ -107,7 +107,9 @@ public class TeamUtils {
             Bukkit.getPlayer(player).sendMessage("§c你还没有加入一个队伍");
         } else {
             String msg = "§7=============§9" + team.getDisplayName() + "团队信息§7=============\n";
-            msg += "§b队长：§7" + team.getCaptain().getName() + "\n";
+            if (team.getCaptain() != null) {
+                msg += "§b队长：§7" + team.getCaptain().getName() + "\n";
+            }
             msg += "§b成员：\n§7" + team.getMembersString();
             Bukkit.getPlayer(player).sendMessage(msg);
         }
@@ -285,31 +287,32 @@ public class TeamUtils {
         return teams;
     }
 
-    public static void randomTeam(String[] notRandomPlayers,int size){
+    public static void randomTeam(String[] notRandomPlayers, int size) {
         clearTeam();
         List<String> players = new ArrayList<>();
-        for (Player player:Bukkit.getOnlinePlayers()){
+        for (Player player : Bukkit.getOnlinePlayers()) {
             players.add(player.getName());
         }
-        for (String player:notRandomPlayers){
+        for (String player : notRandomPlayers) {
             players.remove(player);
         }
         randomPlayer(size, players);
     }
-    public static void randomTeam(int size){
+
+    public static void randomTeam(int size) {
         clearTeam();
         List<String> players = new ArrayList<>();
-        for (Player player:Bukkit.getOnlinePlayers()){
+        for (Player player : Bukkit.getOnlinePlayers()) {
             players.add(player.getName());
         }
         randomPlayer(size, players);
     }
 
     private static void randomPlayer(int size, List<String> players) {
-        List<List<OfflinePlayer>> playerGroups = RandomUtils.randomPlayer(players,size);
-        for (List<OfflinePlayer> playerGroup:playerGroups){
+        List<List<OfflinePlayer>> playerGroups = RandomUtils.randomPlayer(players, size);
+        for (List<OfflinePlayer> playerGroup : playerGroups) {
             int id = ++BaseTeam.teamNumber;
-            String teamName = "团队"+id;
+            String teamName = "团队" + id;
             Team team = TeamData.teamScoreboard.registerNewTeam(teamName);
             team.setDisplayName(teamName);
             team.setAllowFriendlyFire(false);
@@ -322,14 +325,15 @@ public class TeamUtils {
                     .members(playerGroup)
                     .team(team)
                     .build();
-            for (OfflinePlayer player:playerGroup){
+
+            for (OfflinePlayer player : playerGroup) {
                 TeamData.alreadyJoined.add(player.getName());
             }
-            TeamData.teams.put(id,baseTeam);
+            TeamData.teams.put(id, baseTeam);
         }
     }
 
-    public static void clearTeam(){
+    public static void clearTeam() {
         TeamData.teams.clear();
         BaseTeam.teamNumber = 0;
         TeamData.teamScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
