@@ -28,4 +28,12 @@ public class BaseTeam {
     private Color color;
     private List<OfflinePlayer> members;
     private Team team;
+
+    public String getMembersString(){
+        StringBuilder text = new StringBuilder();
+        for (OfflinePlayer player: members){
+            text.append(player.getName());
+        }
+        return text.toString();
+    }
 }

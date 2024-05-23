@@ -1,7 +1,9 @@
 package online.yudream.racecore.commands;
 
+import online.yudream.racecore.entity.BaseTeam;
 import online.yudream.racecore.utils.TeamUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -27,7 +29,7 @@ public class PlayerCommands implements CommandExecutor, TabExecutor {
                             return true;
                         }
                     }
-                case "join":
+                case "accept":
                     if (commandSender instanceof Player) {
                         Player player = (Player) commandSender;
                         TeamUtils.join(player.getName());
@@ -54,6 +56,19 @@ public class PlayerCommands implements CommandExecutor, TabExecutor {
                         TeamUtils.cancelJoin(player.getName());
                         return true;
                     }
+                case "info":
+                    if (commandSender instanceof Player) {
+                        Player player = (Player) commandSender;
+                        TeamUtils.printMembers(player.getName());
+                    }
+                case "kick":
+                    if (commandSender instanceof Player) {
+                        if (strings.length == 2) {
+                            Player player = (Player) commandSender;
+                            String p = strings[1];
+                            TeamUtils.kickPlayer(player.getName(), p);
+                        }
+                    }
             }
 
         }
@@ -65,16 +80,26 @@ public class PlayerCommands implements CommandExecutor, TabExecutor {
         List<String> list = new ArrayList<>();
         switch (strings.length) {
             case 1:
-                list = List.of("create", "join", "leave", "cancel", "invite", "help");
+                list = List.of("create", "accept", "leave", "cancel", "invite", "info", "kick", "help");
                 return list;
             case 2:
-                if (strings[0].equals("invite")) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        list.add(player.getName());
-                    }
-                    return list;
+                switch (strings[0]) {
+                    case "invite":
+                        Player p = (Player) commandSender;
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            if (!p.getUniqueId().equals(player.getUniqueId())) {
+                                list.add(player.getName());
+                            }
+                        }
+                        return list;
+                    case "kick":
+                        Player player = (Player) commandSender;
+                        BaseTeam team = TeamUtils.getTeam(player.getName());
+                        for (OfflinePlayer offlinePlayer : team.getMembers()) {
+                            list.add(offlinePlayer.getName());
+                        }
+                        return list;
                 }
-
         }
         return list;
     }
