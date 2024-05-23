@@ -77,6 +77,9 @@ public class TeamUtils {
                         // 当退出玩家为队长时候删除队伍
                         if (Objects.equals(team.getCaptain().getName(), player)) {
                             team.getTeam().unregister();
+                            for (OfflinePlayer player1: members){
+                                TeamData.alreadyJoined.remove(player1.getName());
+                            }
                             TeamData.teams.remove(team.getId());
                         }
                         Bukkit.getPlayer(player).sendMessage("§c你退出了当前团队！");
@@ -92,9 +95,9 @@ public class TeamUtils {
         if ((!TeamData.alreadyJoined.contains(player)) || team == null) {
             Bukkit.getPlayer(player).sendMessage("§c你还没有加入一个队伍");
         } else {
-            TextComponent msg = Component.text("§7=============§9" + team.getCaptain() + "团队信息§7=============\n");
-            msg.append(Component.text("§b队长：§7"+team.getCaptain()));
-            msg.append(Component.text("§b成员：\n§7"+team.getMembersString()));
+            String msg ="§7=============§9" + team.getDisplayName() + "团队信息§7=============\n";
+            msg+="§b队长：§7"+team.getCaptain().getName()+"\n";
+            msg+="§b成员：\n§7"+team.getMembersString();
             Bukkit.getPlayer(player).sendMessage(msg);
         }
     }
@@ -109,22 +112,28 @@ public class TeamUtils {
     public static void kickPlayer(String captain, String player) {
         int id = TeamData.getTeamIdByCaption(Bukkit.getOfflinePlayer(captain));
         if (id > 0) {
-            BaseTeam team = TeamData.teams.get(id);
-            if (team.getMembers().contains(Bukkit.getOfflinePlayer(player))) {
-                Team team1 = team.getTeam();
-                List<OfflinePlayer> members = team.getMembers();
-                team1.removeEntry(player);
-                team.setTeam(team1);
-                members.remove(Bukkit.getOfflinePlayer(player));
-                team.setMembers(members);
-                TeamData.alreadyJoined.remove(player);
-                Bukkit.getPlayer(player).sendMessage("§c你被剔出了当前团队！");
-                Bukkit.getPlayer(captain).sendMessage("§c你已经将§7" + player + "§c剔出了队伍！");
-            } else {
-                Bukkit.getPlayer(captain).sendMessage("§c该玩家不在你的队伍中！");
+
+            if (!player.equals(captain)){
+                BaseTeam team = TeamData.teams.get(id);
+                if (team.getMembers().contains(Bukkit.getOfflinePlayer(player))) {
+                    Team team1 = team.getTeam();
+                    List<OfflinePlayer> members = team.getMembers();
+                    team1.removeEntry(player);
+                    team.setTeam(team1);
+                    members.remove(Bukkit.getOfflinePlayer(player));
+                    team.setMembers(members);
+                    TeamData.alreadyJoined.remove(player);
+                    Objects.requireNonNull(Bukkit.getPlayer(player)).sendMessage("§c你被剔出了当前团队！");
+                    Objects.requireNonNull(Bukkit.getPlayer(captain)).sendMessage("§c你已经将§7" + player + "§c剔出了队伍！");
+                } else {
+                    Objects.requireNonNull(Bukkit.getPlayer(captain)).sendMessage("§c该玩家不在你的队伍中！");
+                }
+            }
+            else {
+                Objects.requireNonNull(Bukkit.getPlayer(captain)).sendMessage("§你不能踢你自己出队！");
             }
         } else {
-            Bukkit.getPlayer(captain).sendMessage("§c你不是队长！");
+            Objects.requireNonNull(Bukkit.getPlayer(captain)).sendMessage("§c你不是队长！");
         }
     }
 
@@ -163,10 +172,10 @@ public class TeamUtils {
 
             TeamData.invites.put(player, teamId);
             // 向被邀请玩家发送
-            TextComponent message = Component.text("§9点击加入该队伍！").clickEvent(ClickEvent.runCommand("/rc accept"));
+            TextComponent message = Component.text("§b"+caption+"§9邀请你加入他的队伍！\n").append(Component.text("§c点击加入该队伍！").clickEvent(ClickEvent.runCommand("/rc accept")).append(Component.text("\n§7该请求将在120s后过时！")));
             Objects.requireNonNull(Bukkit.getPlayer(player)).sendMessage(message);
             // 向队长发送
-            TextComponent msg = Component.text("§9已向§c" + player + "§9发送邀请!").append(Component.text(("§c点击取消!")).clickEvent(ClickEvent.runCommand("/rc cancel")));
+            TextComponent msg = Component.text("§9已向§c" + player + "§9发送邀请!");
             Objects.requireNonNull(Bukkit.getPlayer(caption)).sendMessage(msg);
             //创建120s定时任务 120s超时取消邀请
             TeamData.tasks.put(player, new BukkitRunnable() {

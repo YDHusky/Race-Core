@@ -60,6 +60,7 @@ public class PlayerCommands implements CommandExecutor, TabExecutor {
                     if (commandSender instanceof Player) {
                         Player player = (Player) commandSender;
                         TeamUtils.printMembers(player.getName());
+                        return true;
                     }
                 case "kick":
                     if (commandSender instanceof Player) {
@@ -67,6 +68,7 @@ public class PlayerCommands implements CommandExecutor, TabExecutor {
                             Player player = (Player) commandSender;
                             String p = strings[1];
                             TeamUtils.kickPlayer(player.getName(), p);
+                            return true;
                         }
                     }
             }

@@ -30,10 +30,10 @@ public class BaseTeam {
     private Team team;
 
     public String getMembersString(){
-        StringBuilder text = new StringBuilder();
+        String text = "";
         for (OfflinePlayer player: members){
-            text.append(player.getName());
+            text+=(player.getName())+"\n";
         }
-        return text.toString();
+        return text;
     }
 }
