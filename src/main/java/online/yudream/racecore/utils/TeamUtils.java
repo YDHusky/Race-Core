@@ -8,16 +8,16 @@ import online.yudream.racecore.config.TeamConfig;
 import online.yudream.racecore.data.TeamData;
 import online.yudream.racecore.entity.BaseTeam;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 队伍工具类
@@ -48,6 +48,7 @@ public class TeamUtils {
             team1.setAllowFriendlyFire(false);
             // 对于自己的队伍开启防碰撞体积, 而对其他队伍开启体积碰撞
             // 这里的FOR_OWN_TEAM表示的意思是只对本队 关闭
+            team1.setColor(RandomUtils.getRandomChatColor());
             team1.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
             team1.addEntry(caption);
             members.add(Bukkit.getOfflinePlayer(caption));
@@ -266,6 +267,7 @@ public class TeamUtils {
                     .build();
             // 计分板队伍注册
             Team team = TeamData.teamScoreboard.registerNewTeam(teamKey);
+            team.setColor(ChatColor.getByChar(teamConfig.getString(teamKey+".color")));
             team.setDisplayName(teamConfig.getString(teamKey + ".name"));
             team.setAllowFriendlyFire(false);
             // 对于自己的队伍开启防碰撞体积, 而对其他队伍开启体积碰撞
@@ -314,30 +316,36 @@ public class TeamUtils {
             int id = ++BaseTeam.teamNumber;
             String teamName = "团队" + id;
             Team team = TeamData.teamScoreboard.registerNewTeam(teamName);
+            team.setPrefix("["+teamName+"]");
             team.setDisplayName(teamName);
             team.setAllowFriendlyFire(false);
             // 对于自己的队伍开启防碰撞体积, 而对其他队伍开启体积碰撞
             // 这里的FOR_OWN_TEAM表示的意思是只对本队 关闭
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
+            team.setColor(RandomUtils.getRandomChatColor());
             BaseTeam baseTeam = BaseTeam.builder()
                     .id(id)
                     .displayName(teamName)
                     .members(playerGroup)
-                    .team(team)
+                    .score(0)
                     .build();
 
             for (OfflinePlayer player : playerGroup) {
                 TeamData.alreadyJoined.add(player.getName());
+                team.addEntry(player.getName());
                 Bukkit.getPlayer(player.getUniqueId()).sendMessage("§9你已被分配到§7"+baseTeam.getDisplayName()+"§9!");
             }
+            baseTeam.setTeam(team);
             TeamData.teams.put(id, baseTeam);
         }
+        ScoreBoardUtils.initScore();
     }
+
 
     public static void clearTeam() {
         TeamData.teams.clear();
         BaseTeam.teamNumber = 0;
-        TeamData.teamScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        ScoreBoardUtils.initScoreBoard();
         TeamData.tasks.clear();
         TeamData.invites.clear();
         TeamData.alreadyJoined.clear();

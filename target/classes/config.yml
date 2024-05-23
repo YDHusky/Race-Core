@@ -6,3 +6,4 @@
 version: '1.0-SNAPSHOT'
 raceMap:
   name: 'test'
+minStartPlayer: 4

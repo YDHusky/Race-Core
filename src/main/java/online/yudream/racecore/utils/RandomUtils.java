@@ -1,6 +1,7 @@
 package online.yudream.racecore.utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 
@@ -39,6 +40,12 @@ public class RandomUtils {
         int greenDiff = c1.getGreen() - c2.getGreen();
         int blueDiff = c1.getBlue() - c2.getBlue();
         return Math.sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
+    }
+
+    private static final ChatColor[] CHAT_COLORS = ChatColor.values();
+
+    public static ChatColor getRandomChatColor() {
+        return CHAT_COLORS[RANDOM.nextInt(CHAT_COLORS.length)];
     }
 
     public static List<List<OfflinePlayer>> randomPlayer(List<String> players, int size) {

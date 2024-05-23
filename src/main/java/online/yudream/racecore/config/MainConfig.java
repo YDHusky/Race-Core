@@ -11,11 +11,13 @@ public class MainConfig {
     public static Configuration index;
     private String version;
     private String raceWorldName;
+    private int minStartPlayer;
 
 
     public MainConfig() {
         version = getSting("version");
         raceWorldName = getSting("raceMap.name");
+        minStartPlayer = getInt("minStartPlayer");
     }
 
     public static String getSting(String key) {
@@ -28,5 +30,8 @@ public class MainConfig {
 
     public static boolean getBoolean(String key) {
         return index.getBoolean(key);
+    }
+    public static int getInt(String key){
+        return index.getInt(key);
     }
 }

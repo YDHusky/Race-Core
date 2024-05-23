@@ -6,3 +6,4 @@
 version: '${project.version}'
 raceMap:
   name: 'test'
+minStartPlayer: 4

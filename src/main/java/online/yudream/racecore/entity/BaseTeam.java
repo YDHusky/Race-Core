@@ -22,7 +22,7 @@ import java.util.List;
 public class BaseTeam {
     public static int teamNumber = 0;
     private int id;
-    private int score;
+    private int score=0;
     private OfflinePlayer captain;
     private String displayName;
     private Color color;
