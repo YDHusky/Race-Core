@@ -328,6 +328,7 @@ public class TeamUtils {
 
             for (OfflinePlayer player : playerGroup) {
                 TeamData.alreadyJoined.add(player.getName());
+                Bukkit.getPlayer(player.getUniqueId()).sendMessage("§9你已被分配到§7"+baseTeam.getDisplayName()+"§9!");
             }
             TeamData.teams.put(id, baseTeam);
         }

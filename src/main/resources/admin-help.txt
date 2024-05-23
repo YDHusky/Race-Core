@@ -1,0 +1,7 @@
+§7==========================§9Race Core Admin§7==========================
+§9/rc saveWorld (world) §7保存世界(不能保存主世界)
+§9/rc resetWorld (world) §7重置世界
+§9/rc team random (size) [players] §7随机分组 size为组人数 可选参数为players为不参与分组的玩家(多个使用','隔开)
+
+§7tips: ()为必选参数,[]为可选参数
+

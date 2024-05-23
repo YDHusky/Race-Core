@@ -48,15 +48,17 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
                                 if (strings.length == 3) {
                                     int size = Integer.parseInt(strings[2]);
                                     TeamUtils.randomTeam(size);
+                                    return true;
                                 } else if (strings.length == 4) {
                                     int size = Integer.parseInt(strings[2]);
                                     String[] players = strings[3].split(",");
                                     TeamUtils.randomTeam(players,size);
+                                    return true;
                                 }
                         }
                     }
                 case "help":
-                    sender.sendMessage(Objects.requireNonNull(FileUtils.readResourceFile("help.txt")));
+                    sender.sendMessage(Objects.requireNonNull(FileUtils.readResourceFile("admin-help.txt")));
                     return true;
             }
         }
@@ -73,6 +75,7 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
                     list.add("saveWorld");
                     list.add("resetWorld");
                     list.add("help");
+                    list.add("team");
                     return list;
                 case 2:
                     if (strings[0].equals("saveWorld") || strings[0].equals("resetWorld")) {
@@ -81,6 +84,9 @@ public class AdminCommands implements CommandExecutor, TabExecutor {
                             list.add(world.getName());
                         }
                         return list;
+                    }
+                    if (strings[0].equals("team")){
+                        list.add("random");
                     }
             }
         }

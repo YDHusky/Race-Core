@@ -44,15 +44,21 @@ public class RandomUtils {
     public static List<List<OfflinePlayer>> randomPlayer(List<String> players, int size) {
         List<List<OfflinePlayer>> playerGroups = new ArrayList<>();
         int total = players.size();
+
         int groupNum = total / size + (total % size == 0 ? 0 : 1);
         total--;
         for (int i=0;i<groupNum;i++){
             List<OfflinePlayer> playerGroup = new ArrayList<>();
             for (int j = 0; j < size; j++) {
-                if (total==0){
+                if (total<0){
                     break;
                 }else {
-                    int index = RANDOM.nextInt(total--);
+                    int index;
+                    if (total>0){
+                        index = RANDOM.nextInt(total--);
+                    }else {
+                        index = 0;
+                    }
                     playerGroup.add(Bukkit.getOfflinePlayer(players.get(index)));
                     players.remove(index);
                 }
