@@ -4,11 +4,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import online.yudream.racecore.RaceCore;
+import online.yudream.racecore.config.TeamConfig;
 import online.yudream.racecore.data.TeamData;
 import online.yudream.racecore.entity.BaseTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
@@ -43,6 +45,10 @@ public class TeamUtils {
                     .build();
             List<OfflinePlayer> members = new ArrayList<>();
             Team team1 = TeamData.teamScoreboard.registerNewTeam("team" + team.getId());
+            team1.setAllowFriendlyFire(false);
+            // 对于自己的队伍开启防碰撞体积, 而对其他队伍开启体积碰撞
+            // 这里的FOR_OWN_TEAM表示的意思是只对本队 关闭
+            team1.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
             team1.addEntry(caption);
             members.add(Bukkit.getOfflinePlayer(caption));
             team.setMembers(members);
@@ -77,7 +83,7 @@ public class TeamUtils {
                         // 当退出玩家为队长时候删除队伍
                         if (Objects.equals(team.getCaptain().getName(), player)) {
                             team.getTeam().unregister();
-                            for (OfflinePlayer player1: members){
+                            for (OfflinePlayer player1 : members) {
                                 TeamData.alreadyJoined.remove(player1.getName());
                             }
                             TeamData.teams.remove(team.getId());
@@ -90,14 +96,19 @@ public class TeamUtils {
         }
     }
 
+    /**
+     * 打印队伍玩家
+     *
+     * @param player 玩家
+     */
     public static void printMembers(String player) {
         BaseTeam team = getTeam(player);
         if ((!TeamData.alreadyJoined.contains(player)) || team == null) {
             Bukkit.getPlayer(player).sendMessage("§c你还没有加入一个队伍");
         } else {
-            String msg ="§7=============§9" + team.getDisplayName() + "团队信息§7=============\n";
-            msg+="§b队长：§7"+team.getCaptain().getName()+"\n";
-            msg+="§b成员：\n§7"+team.getMembersString();
+            String msg = "§7=============§9" + team.getDisplayName() + "团队信息§7=============\n";
+            msg += "§b队长：§7" + team.getCaptain().getName() + "\n";
+            msg += "§b成员：\n§7" + team.getMembersString();
             Bukkit.getPlayer(player).sendMessage(msg);
         }
     }
@@ -113,7 +124,7 @@ public class TeamUtils {
         int id = TeamData.getTeamIdByCaption(Bukkit.getOfflinePlayer(captain));
         if (id > 0) {
 
-            if (!player.equals(captain)){
+            if (!player.equals(captain)) {
                 BaseTeam team = TeamData.teams.get(id);
                 if (team.getMembers().contains(Bukkit.getOfflinePlayer(player))) {
                     Team team1 = team.getTeam();
@@ -128,8 +139,7 @@ public class TeamUtils {
                 } else {
                     Objects.requireNonNull(Bukkit.getPlayer(captain)).sendMessage("§c该玩家不在你的队伍中！");
                 }
-            }
-            else {
+            } else {
                 Objects.requireNonNull(Bukkit.getPlayer(captain)).sendMessage("§你不能踢你自己出队！");
             }
         } else {
@@ -172,7 +182,7 @@ public class TeamUtils {
 
             TeamData.invites.put(player, teamId);
             // 向被邀请玩家发送
-            TextComponent message = Component.text("§b"+caption+"§9邀请你加入他的队伍！\n").append(Component.text("§c点击加入该队伍！").clickEvent(ClickEvent.runCommand("/rc accept")).append(Component.text("\n§7该请求将在120s后过时！")));
+            TextComponent message = Component.text("§b" + caption + "§9邀请你加入他的队伍！\n").append(Component.text("§c点击加入该队伍！").clickEvent(ClickEvent.runCommand("/rc accept")).append(Component.text("\n§7该请求将在120s后过时！")));
             Objects.requireNonNull(Bukkit.getPlayer(player)).sendMessage(message);
             // 向队长发送
             TextComponent msg = Component.text("§9已向§c" + player + "§9发送邀请!");
@@ -273,5 +283,58 @@ public class TeamUtils {
             teams.add(baseTeam);
         }
         return teams;
+    }
+
+    public static void randomTeam(String[] notRandomPlayers,int size){
+        clearTeam();
+        List<String> players = new ArrayList<>();
+        for (Player player:Bukkit.getOnlinePlayers()){
+            players.add(player.getName());
+        }
+        for (String player:notRandomPlayers){
+            players.remove(player);
+        }
+        randomPlayer(size, players);
+    }
+    public static void randomTeam(int size){
+        clearTeam();
+        List<String> players = new ArrayList<>();
+        for (Player player:Bukkit.getOnlinePlayers()){
+            players.add(player.getName());
+        }
+        randomPlayer(size, players);
+    }
+
+    private static void randomPlayer(int size, List<String> players) {
+        List<List<OfflinePlayer>> playerGroups = RandomUtils.randomPlayer(players,size);
+        for (List<OfflinePlayer> playerGroup:playerGroups){
+            int id = ++BaseTeam.teamNumber;
+            String teamName = "团队"+id;
+            Team team = TeamData.teamScoreboard.registerNewTeam(teamName);
+            team.setDisplayName(teamName);
+            team.setAllowFriendlyFire(false);
+            // 对于自己的队伍开启防碰撞体积, 而对其他队伍开启体积碰撞
+            // 这里的FOR_OWN_TEAM表示的意思是只对本队 关闭
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
+            BaseTeam baseTeam = BaseTeam.builder()
+                    .id(id)
+                    .displayName(teamName)
+                    .members(playerGroup)
+                    .team(team)
+                    .build();
+            for (OfflinePlayer player:playerGroup){
+                TeamData.alreadyJoined.add(player.getName());
+            }
+            TeamData.teams.put(id,baseTeam);
+        }
+    }
+
+    public static void clearTeam(){
+        TeamData.teams.clear();
+        BaseTeam.teamNumber = 0;
+        TeamData.teamScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        TeamData.tasks.clear();
+        TeamData.invites.clear();
+        TeamData.alreadyJoined.clear();
     }
 }
